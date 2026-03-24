@@ -1,0 +1,36 @@
+{
+  "name": "tdv-nike",
+  "version": "1.0.0",
+  "description": "Nike monitor API and runner for TDV",
+  "type": "module",
+  "main": "api_server.js",
+  "scripts": {
+    "start": "node nike.js",
+    "api": "node api_server.js"
+  },
+  "keywords": [
+    "tdv",
+    "nike",
+    "monitor",
+    "api"
+  ],
+  "author": "TDV",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.8.2",
+    "chalk": "^5.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "ffi-rs": "^1.0.90",
+    "got": "^14.4.7",
+    "helmet": "^8.1.0",
+    "hpagent": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io-client": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
