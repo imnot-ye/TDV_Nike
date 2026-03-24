@@ -1,0 +1,24 @@
+{
+    "nike_channels": [
+      {
+        "platform": "SNKRS App / SNEAKERS Web (Global & EU)",
+        "channel_id": "d9a5bc42-4b9c-4976-858a-f159cf99c647",
+        "description": "È il canale principale per i drop SNKRS in Europa e in molti altri mercati globali. Quello che hai usato tu prima."
+      },
+      {
+        "platform": "SNKRS Web (US)",
+        "channel_id": "010794e5-35fe-4e32-aaff-cd2c74f89d61",
+        "description": "Utilizzato spesso per il traffico web specifico del mercato SNKRS americano."
+      },
+      {
+        "platform": "SNKRS App (Giappone)",
+        "channel_id": "008be467-6c78-4079-94f0-70e2d6cc4003",
+        "description": "Canale specifico isolato per il mercato SNKRS giapponese."
+      },
+      {
+        "platform": "Nike.com / Nike App (Mainstream)",
+        "channel_id": "fcddfb36-2244-482f-87d3-641dc2f9b177",
+        "description": "Questo è il canale generale. Se cerchi un paio di Air Force 1 classiche o abbigliamento sul sito standard Nike (non SNKRS), l'API interroga questo channelId."
+      }
+    ]
+  }
