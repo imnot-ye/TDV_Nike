@@ -1,3 +1,6 @@
 Data/*
 .env
 _pycache_/*
+t.py
+test.js
+node_modules

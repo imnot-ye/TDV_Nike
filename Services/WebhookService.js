@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { buildRegionLinks } from '../Utils/MonitorUtils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Paths: from file location, or from cwd (PM2 often uses Shopify_Monitor as cwd)
@@ -187,15 +188,21 @@ class Webhook {
         inline: true
       },
       {
-        name: '**Quicktasks**',
+        name: 'INFO',
         value: (() => {
-          const u = product.url || '';
-          return [
-            `[Cyber](https://cybersole.io/dashboard/quicktask?input=${u})`,
-            `[NSB](https://dash.nikeshoebot.com/qt?input=${u})`,
-            `[Losco](https://www.loscobot.eu/dashboard/shopify?url=${u}&sizevariants=random)`,
-            `[Adonis](https://quicktask.adonisbots.com/quicktask/?site=shopify&product=${u})`
-          ].join(' | ');
+          return product.info || product.msg || 'N/A';
+        })(),
+        inline: false
+      },
+      {
+        name: 'LINKS',
+        value: (() => {
+          if (product.links) return product.links;
+          const regionLinks = buildRegionLinks(product.url || '');
+          if (!regionLinks) return product.url ? `[Nike](${product.url})` : 'N/A';
+          return Object.entries(regionLinks)
+            .map(([region, url]) => `[${region}](${url})`)
+            .join(' | ');
         })(),
         inline: false
       }
