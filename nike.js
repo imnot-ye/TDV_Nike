@@ -177,6 +177,32 @@ function loadMonitors() {
     }
 }
 
+
+/**
+ * One SKU = one long-running task (same idea as cardgameclub initMonitor).
+ */
+function initNikeSkuTask(m, proxyManagers, index) {
+    const monitor = new NikeMonitor(
+        m.sku,
+        m.marketplace || 'IT',
+        m.language || 'it',
+        m.channelId || 'd9a5bc42-4b9c-4976-858a-f159cf99c647',
+        m.proxyPool || 'big_pool',
+        m.delay || 0,
+        m.webhook || null
+    );
+    if (monitor.proxyManager && proxyManagers.has(m.proxyPool)) {
+        monitor.proxyManager = proxyManagers.get(m.proxyPool);
+    }
+
+    return (async () => {
+
+        while (true) {
+            await monitor.checkOnce();
+        }
+    })();
+}
+
 async function runAllMonitors() {
     console.log(chalk.cyan('[Nike] Starting...'));
     const monitorsData = loadMonitors();
@@ -204,34 +230,11 @@ async function runAllMonitors() {
         }
     }
 
-    const monitors = list.map(m => {
-        const monitor = new NikeMonitor(
-            m.sku,
-            m.marketplace || 'IT',
-            m.language || 'it',
-            m.channelId || 'd9a5bc42-4b9c-4976-858a-f159cf99c647',
-            m.proxyPool || 'big_pool',
-            m.delay || 0,
-            m.webhook || null
-        );
-        if (monitor.proxyManager && proxyManagers.has(m.proxyPool)) {
-            monitor.proxyManager = proxyManagers.get(m.proxyPool);
-        }
-        return monitor;
-    });
+    console.log(chalk.green(`Monitoring ${list.length} SKU(s) in parallel`));
 
-    console.log(chalk.green(`Monitoring ${monitors.length} SKU(s)`));
-
-    const delayBetweenSkus = 2000;
-    const delayBetweenRounds = 5000;
-
-    while (true) {
-        for (const monitor of monitors) {
-            await monitor.checkOnce();
-            await sleep(delayBetweenSkus);
-        }
-        await sleep(delayBetweenRounds);
-    }
+    const tasks = list.map((m, i) => initNikeSkuTask(m, proxyManagers, i));
+    await Promise.allSettled(tasks);
+    await new Promise(() => { });
 }
 
 async function main() {
@@ -244,4 +247,4 @@ main().catch((error) => {
     process.exit(1);
 });
 
-export { NikeMonitor, runAllMonitors };
+export { NikeMonitor, runAllMonitors, initNikeSkuTask };
