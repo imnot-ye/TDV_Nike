@@ -4,9 +4,22 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { buildRegionLinks } from '../Utils/MonitorUtils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+function _encodeSkuForUrl(sku) {
+  return encodeURIComponent(String(sku || '').trim());
+}
+
+function _nikeAppLinkLine(sku) {
+  const q = _encodeSkuForUrl(sku);
+  return `[SNKRS](http://www.hawkaio.com/resnkrs?pid=${q}) | [NIKE APP](http://www.hawkaio.com/renike?pid=${q})`;
+}
+
+function _nikeResaleLinksLine(sku) {
+  const q = _encodeSkuForUrl(sku);
+  return `[StockX](https://stockx.com/search?s=${q}) | [KLEKT](https://klekt.com/search?q=${q}) | [GOAT](https://www.goat.com/en-gb/search?query=${q}&pageNumber=1)`;
+}
 // Paths: from file location, or from cwd (PM2 often uses Shopify_Monitor as cwd)
 const WEBHOOKS_PATHS = [
   path.join(__dirname, '../../Data', 'webhooks.json'),
@@ -150,10 +163,11 @@ class Webhook {
     
     this.webhookUrl = url;
 
+    const skuVal = product.prod_id || product.id || 'N/A';
     const fields = [
-      { name: 'SKU', value: product.prod_id || product.id || 'N/A', inline: true },
+      { name: 'SKU', value: skuVal, inline: true },
+      { name: 'Status', value: product.merchStatus != null ? String(product.merchStatus) : 'N/A', inline: true },
       { name: 'Price', value: product.price || 'N/A', inline: true },
-      { name: '\u200b', value: '\u200b', inline: true },
     ];
 
     if (product.stock) {
@@ -188,22 +202,13 @@ class Webhook {
         inline: true
       },
       {
-        name: 'INFO',
-        value: (() => {
-          return product.info || product.msg || 'N/A';
-        })(),
+        name: 'APP LINK',
+        value: product.appLink || _nikeAppLinkLine(skuVal),
         inline: false
       },
       {
         name: 'LINKS',
-        value: (() => {
-          if (product.links) return product.links;
-          const regionLinks = buildRegionLinks(product.url || '');
-          if (!regionLinks) return product.url ? `[Nike](${product.url})` : 'N/A';
-          return Object.entries(regionLinks)
-            .map(([region, url]) => `[${region}](${url})`)
-            .join(' | ');
-        })(),
+        value: product.links || _nikeResaleLinksLine(skuVal),
         inline: false
       }
     );

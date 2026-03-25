@@ -86,6 +86,7 @@ class NikeMonitor {
                     status: isAvailable && inStockSizes.length > 0 ? 'INSTOCK' : 'OOS',
                     id: merchProduct.id,
                     productId: merchProduct.id,
+                    merchStatus: merchProduct.status,
                     title: productContent.fullTitle || productContent.title,
                     price: merchPrice.currentPrice,
                     image: imageUrl,
@@ -149,6 +150,7 @@ class NikeMonitor {
                         thumbnail: currentProductInfo.image,
                         title: currentProductInfo.title,
                         price: String(currentProductInfo.price),
+                        merchStatus: currentProductInfo.merchStatus,
                         variants: sizeLevels.map(v => ({ size: v.size, level: v.level || 'INSTOCK', available: true })),
                         sizeLevels,
                         marketplace: this.marketplace
