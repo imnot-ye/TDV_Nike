@@ -13,7 +13,7 @@ function _encodeSkuForUrl(sku) {
 
 function _nikeAppLinkLine(sku) {
   const q = _encodeSkuForUrl(sku);
-  return `[SNKRS](http://www.hawkaio.com/resnkrs?pid=${q}) | [NIKE APP](http://www.hawkaio.com/renike?pid=${q})`;
+  return `[SNKRS](https://api.thedropview.eu/snkrs/?sku=${q}) | [NIKE APP](https://api.thedropview.eu/nike/?sku=${q})`;
 }
 
 function _nikeResaleLinksLine(sku) {
@@ -196,11 +196,6 @@ class Webhook {
     }
 
     fields.push(
-      {
-        name: '**Product**',
-        value: `[Click Here](${product.url || ''})`,
-        inline: true
-      },
       {
         name: 'APP LINK',
         value: product.appLink || _nikeAppLinkLine(skuVal),
