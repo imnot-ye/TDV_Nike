@@ -31,7 +31,7 @@ class NikeMonitor {
 
         this.proxyManager = proxyPool === 'proxyless' ? null : new Proxy(proxyPool);
 
-        this.url = `https://api.nike.com/product_feed/threads/v2?filter=exclusiveAccess(true,false)&filter=channelId(${this.channelId})&filter=marketplace(${this.marketplace})&filter=language(${this.language})&filter=publishedContent.properties.products.styleColor(${this.sku})`;
+        this.baseUrl = `https://api.nike.com/product_feed/threads/v2?filter=exclusiveAccess(true,false)&filter=channelId(${this.channelId})&filter=marketplace(${this.marketplace})&filter=language(${this.language})&filter=publishedContent.properties.products.styleColor(${this.sku})`;
 
         this.logger = new Logger(`${this.target}_${this.sku}`);
         this.db = database;
@@ -51,7 +51,9 @@ class NikeMonitor {
         this.logger.logMessage('EXTRACTING DATA', null, chalk.yellow);
         try {
             const proxyUrl = this.proxyManager ? this.proxyManager.getRandomProxy() : null;
-            const response = await simpleRequest(this.url, proxyUrl);
+            const antiCache = Date.now();
+            const url = `${this.baseUrl}&abck=${antiCache}`;
+            const response = await simpleRequest(url, proxyUrl);
 
             if (response.status === 403 || response.status === 429) {
                 this.logger.logMessage(`Rotating proxy due to status ${response.status}...`, null, chalk.yellow);
