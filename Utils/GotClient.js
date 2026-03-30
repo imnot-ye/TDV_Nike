@@ -24,7 +24,9 @@ export function createGotWithProxy(proxyUrl = null) {
   if (proxyUrl) {
     options.agent = {
       https: new HttpsProxyAgent({
-        proxy: proxyUrl
+        proxy: proxyUrl,
+        keepAlive: false,
+        maxSockets: 1
       })
     };
   }

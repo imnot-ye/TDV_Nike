@@ -50,14 +50,16 @@ class NikeMonitor {
     async fetchProductInfo() {
         this.logger.logMessage('EXTRACTING DATA', null, chalk.yellow);
         try {
+            if (this.proxyManager) {
+                await this.proxyManager.setRandomProxy();
+            }
             const proxyUrl = this.proxyManager ? this.proxyManager.getRandomProxy() : null;
             const antiCache = Date.now();
-            const url = `${this.baseUrl}&abck=${antiCache}`;
+            const url = `${this.baseUrl}#abck=${antiCache}`;
             const response = await simpleRequest(url, proxyUrl);
 
             if (response.status === 403 || response.status === 429) {
-                this.logger.logMessage(`Rotating proxy due to status ${response.status}...`, null, chalk.yellow);
-                if (this.proxyManager) await this.proxyManager.setRandomProxy();
+                this.logger.logMessage(`Status ${response.status} (proxy rotates next request)`, null, chalk.yellow);
                 return { status: 'error', statusCode: response.status };
             }
 
@@ -190,7 +192,7 @@ function initNikeSkuTask(m, proxyManagers, index) {
         m.language || 'it',
         m.channelId || 'd9a5bc42-4b9c-4976-858a-f159cf99c647',
         m.proxyPool || 'big_pool',
-        m.delay || 0,
+        0,
         m.webhook || null
     );
     if (monitor.proxyManager && proxyManagers.has(m.proxyPool)) {
@@ -201,6 +203,9 @@ function initNikeSkuTask(m, proxyManagers, index) {
 
         while (true) {
             await monitor.checkOnce();
+            if (monitor.delay > 0) {
+                await sleep(monitor.delay * 1000);
+            }
         }
     })();
 }
