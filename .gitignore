@@ -4,3 +4,4 @@ _pycache_/*
 t.py
 test.js
 node_modules
+*.code-workspace
